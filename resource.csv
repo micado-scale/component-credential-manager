@@ -1,0 +1,21 @@
+Id,Code,Message
+1,error_undefined,Undefined error. Check error message and error details in the log file for more information!
+2,uname_notexist,User name does not exist
+3,del_user_success,Delete user successfully
+4,reset_pwd_success,Reset password successfully!
+5,uname_pwd_wrong,User name or password is wrong!
+6,auth_success,User is authenticated!
+7,auth_fail,User is NOT authenticated!
+8,pwd_notmatch,Password does not match!
+9,sqlalchemy_error,Error happens in SQLAlchemy. Check error message and error details in the log file for more information!
+10,pwd_setby_user,Password is set by inputted value from the user
+11,pwd_generated,Password is auto-generated. Its value is: 
+12,add_user_progress,Trying to add a user to database
+13,add_user_success,Add user successfully!
+14,reset_pwd_progress,Trying to reset password of the user
+15,being_locked_user,Your account is being locked due to continous failed attempts to log in. Please try again after 
+16,lock_user_now,You failed to log in contiously. Your account will be locked until 
+17,add_existed_user,This user existed!
+18,change_pwd_progress,Trying to change password for the user
+19,change_pwd_success,Your password is changed successfully!
+20,change_pwd_fail,Failed to change password. Please check your password!

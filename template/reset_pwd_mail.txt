@@ -1,0 +1,7 @@
+Dear ${PERSON_NAME}, 
+
+This is to notify that your password has been reset. Your new password is ${PWD}.
+ 
+Have a nice day!
+
+Yours Truly
