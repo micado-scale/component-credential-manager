@@ -1,6 +1,6 @@
 micado-credential-manager
 ------------------------------------------------------
-v1.0:
+__Version__: v1.0
 
 __File structures:__
 - my_script.py : the main script
