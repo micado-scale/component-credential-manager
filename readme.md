@@ -1,17 +1,21 @@
 micado-credential-manager
 ------------------------------------------------------
 v1.0:
-File structures:
-- Messages are organized in the csv file: resource.csv
-- All initialization (log handler, database creation)  are put in the _init_.py module: app/_init_.py
-- Rest API routing is configured in: app/routes.py
-- Configuration (sender's mail configuration, database filename selection) is configured in: config.py
-- Main script: my_script.py
-- Mail templates are in: template/
-- HTTP return codes are described by constants defined in dbmodels.py
 
-Example: 
-Assuming that the following command lines are called towards the credential manager, i.e. credman component, from another component inside the master node.
+File structures:
+- my_script.py : the main script
+- resource.csv : containing definition for notification messages, error messages,...
+- config.py : configuring the admin's email, database filename and file location
+- app :
+-- _init_py : initialize log handler and database
+-- routes.py : add URL rule for all rest APIs
+-- dbmodels.py : implementation of all rest APIs (HTTP return codes are described by constants defined in this file)
+- template:
+-- reset_pwd_mail.html: template mail to notify the user about password reset
+
+How to use Rest API:
+
+Assuming that the following command lines are called inside a docker container in the master node, and the rest APIs are provided by the credential manager, i.e. credman container.
 
 - Add a new user:
 
@@ -30,4 +34,5 @@ curl -d "username=user01&oldpasswd=123&newpasswd=456" -X PUT credman:5001/v1.0/c
 curl -d "username=user01" credman:5001/v1.0/resetpwd
 
 - Delete a user:
-TBD
+
+curl -d "username=01" credman:5001/v1.0/deleteuser
