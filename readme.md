@@ -2,7 +2,7 @@ micado-credential-manager
 ------------------------------------------------------
 v1.0:
 
-** File structures: **
+__File structures:__
 - my_script.py : the main script
 - resource.csv : containing definition for notification messages, error messages,...
 - config.py : configuring the admin's email, database filename and file location
@@ -13,7 +13,7 @@ v1.0:
 - template:
   - reset_pwd_mail.html: template mail to notify the user about password reset
 
-** How to use Rest API: **
+__How to use Rest API:__
 
 Assuming that the following command lines are called inside a docker container in the master node, and the rest APIs are provided by the credential manager, i.e. credman container.
 
