@@ -35,6 +35,7 @@ UNLOCKED = True
 LOCK_DURATION = 6 # seconds
 USER_ROLE = 0
 ADMIN_ROLE = 2
+USER_ROLE_LIST = ['user','admin']
 # http codes
 # Success
 HTTP_CODE_OK = 200
@@ -46,6 +47,7 @@ HTTP_CODE_UNAUTHORIZED = 401
 HTTP_CODE_LOCKED = 423
 # Server error
 HTTP_CODE_SERVER_ERR = 500
+
 
 
 FROM_ADDRESS = app.config['MAIL_USERNAME']
@@ -549,7 +551,7 @@ def change_password_api():
 				data = {
 					'code' : HTTP_CODE_OK,
 					'developer message' : msg_dict['change_pwd_success'], # Reset password successfully
-					'new password' : new_passwd
+					# 'new password' : new_passwd
 				}
 				js = json.dumps(data)
 				resp = Response(js, status=HTTP_CODE_OK, mimetype='application/json')
@@ -571,3 +573,101 @@ def change_password_api():
 		abort(HTTP_CODE_SERVER_ERR,msg_dict['error_undefined'])
 	finally:
 		db.session.close()
+
+def change_role_api():
+	try:
+		uname = request.values.get("username")
+		new_role_meaning = request.values.get("newrole")
+		app.logger.info("Change the user's role")
+
+		if(new_role_meaning not in USER_ROLE_LIST):
+			data = {
+				'code' : HTTP_CODE_BAD_REQUEST,
+				'user message': msg_dict['role_notexist'],
+				'developer message' : msg_dict['role_notexist'], # User name does not exist
+			}
+			js = json.dumps(data)
+			resp = Response(js, status=HTTP_CODE_BAD_REQUEST, mimetype='application/json')
+			return resp
+
+		user = db.session.query(User).filter_by(username=uname).first()
+		if(user == None):
+			data = {
+				'code' : HTTP_CODE_BAD_REQUEST,
+				'user message': msg_dict['uname_notexist'],
+				'developer message' : msg_dict['uname_notexist'], # User name does not exist
+			}
+			js = json.dumps(data)
+			resp = Response(js, status=HTTP_CODE_BAD_REQUEST, mimetype='application/json')
+		else:
+			current_role = user.role
+
+			if(new_role_meaning=='admin'):
+				new_role = ADMIN_ROLE
+			else:
+				new_role = USER_ROLE
+
+			if (current_role == new_role):
+				data = {
+					'code' : HTTP_CODE_OK,
+					'user message' : msg_dict['same_user_role'],
+					'developer message' : msg_dict['same_user_role'],
+				}
+			else:
+				db.session.query(User).filter_by(username=uname).update({User.role: new_role})
+				db.session.commit()
+				data = {
+					'code' : HTTP_CODE_OK,
+					'user message' : msg_dict['change_user_role_success'],
+					'developer message' : msg_dict['change_user_role_success'],
+				}
+			js = json.dumps(data)
+			resp = Response(js, status=HTTP_CODE_OK, mimetype='application/json')
+		return resp
+	except exc.SQLAlchemyError as e:
+		db.session.rollback()
+		app.logger.error(e)
+		abort(HTTP_CODE_SERVER_ERR,msg_dict['sqlalchemy_error'])
+	# Catch the exception
+	except Exception as e:
+		db.session.rollback()
+		db.session.close()
+		app.logger.error(e)
+		abort(HTTP_CODE_SERVER_ERR,msg_dict['error_undefined'])
+	
+def retrieve_role_api():
+	try:
+		uname = request.values.get("username")
+		app.logger.info("Retrieve the user's role")
+
+		user = db.session.query(User).filter_by(username=uname).first()
+		if(user == None):
+			data = {
+				'code' : HTTP_CODE_BAD_REQUEST,
+				'user message': msg_dict['uname_notexist'],
+				'developer message' : msg_dict['uname_notexist'], # User name does not exist
+			}
+			js = json.dumps(data)
+			resp = Response(js, status=HTTP_CODE_BAD_REQUEST, mimetype='application/json')
+		else:
+			if(user.role==USER_ROLE):
+				user_role_meaning = 'user'
+			if (user.role==ADMIN_ROLE):
+				user_role_meaning = 'admin'
+			data = {
+				'code' : HTTP_CODE_OK,
+				'role' : user_role_meaning,
+			}
+			js = json.dumps(data)
+			resp = Response(js, status=HTTP_CODE_OK, mimetype='application/json')
+		return resp
+	except exc.SQLAlchemyError as e:
+		db.session.rollback()
+		app.logger.error(e)
+		abort(HTTP_CODE_SERVER_ERR,msg_dict['sqlalchemy_error'])
+	# Catch the exception
+	except Exception as e:
+		db.session.rollback()
+		db.session.close()
+		app.logger.error(e)
+		abort(HTTP_CODE_SERVER_ERR,msg_dict['error_undefined'])
