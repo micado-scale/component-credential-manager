@@ -19,3 +19,6 @@ Id,Code,Message
 18,change_pwd_progress,Trying to change password for the user
 19,change_pwd_success,Your password is changed successfully!
 20,change_pwd_fail,Failed to change password. Please check your password!
+21,role_notexist,The role does not exists. It should be 'user' or 'admin'!
+22,change_user_role_success, The user's role is changed successfully!
+23,same_user_role, The user's new role is as same as the current role. Nothing's updated!
