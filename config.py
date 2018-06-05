@@ -31,10 +31,10 @@ class Config(object):
 	MAIL_SERVER = os.environ.get('MAIL_SERVER') or 'smtp.googlemail.com'
 	MAIL_PORT = int(os.environ.get('MAIL_PORT') or 587)
 	MAIL_USE_TLS = int(os.environ.get('MAIL_USE_TLS') or 1)is not None
-	MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or 'your_email@gmail.com' # from address
-	MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or 'your_email_password' # fill in the password here
-	MAIL_SEND_RESET_PWD = = os.environ.get('MAIL_SEND_RESET_PWD') or False
-	ADMINS = ['your_email@gmail.com'] # to address
+	MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or 'your_email@gmail.com' # sender's address
+	MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or 'your_email_password' # fill in the email's password here
+	MAIL_SEND_RESET_PWD = os.environ.get('MAIL_SEND_RESET_PWD') or False
+	ADMINS = ['your_email@gmail.com'] # recever's email address
 
 #DATABASE_CONFIG = {
  #   'PASSWD_LEN': 'localhost'
