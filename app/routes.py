@@ -20,7 +20,7 @@ def index():
 	[description]
 	This function is only for testing if the web service is in operating
 	"""
-	return "Hello, World!"
+	return "Hello, this is the Credential Manager component!"
     
 app.add_url_rule('/v1.0/','index',index)
 # app.add_url_rule('/getuser','get_user', dbmodels.get_user,methods=['GET'])
@@ -30,3 +30,5 @@ app.add_url_rule('/v1.0/verify','verify_user_api', dbmodels.verify_user_api, met
 app.add_url_rule('/v1.0/resetpwd','reset_passwd_api', dbmodels.reset_passwd_api, methods=['PUT'])
 app.add_url_rule('/v1.0/deleteuser','delete_user_api', dbmodels.delete_user_api, methods=['PUT'])
 app.add_url_rule('/v1.0/changepwd','change_password_api', dbmodels.change_password_api, methods=['PUT'])
+app.add_url_rule('/v1.0/changerole','change_role_api', dbmodels.change_role_api, methods=['PUT'])
+app.add_url_rule('/v1.0/getrole','retrieve_role_api', dbmodels.retrieve_role_api, methods=['GET'])
