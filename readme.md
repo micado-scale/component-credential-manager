@@ -9,13 +9,13 @@ __File structures:__
 - app :
   - _init_py : initialize log handler and database
   - routes.py : add URL rule for all rest APIs
-  - dbmodels.py : implementation of all rest APIs (HTTP return codes are described by constants defined in this file)
+  - dbmodels.py : implementation of all rest APIs (HTTP return codes are defined by constants in this file)
 - template:
   - reset_pwd_mail.html: template mail to notify the user about password reset
 
 __How to use Rest API:__
 
-Assuming that the following command lines are called inside a docker container in the master node, and the rest APIs are provided by the credential manager, i.e. credman container.
+Assuming that the following command lines are called inside a docker container in the master node, and the rest APIs are provided by the credential manager, i.e. "credman" container.
 
 - Add a new user:
 
