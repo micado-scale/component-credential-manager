@@ -50,7 +50,7 @@ HTTP_CODE_SERVER_ERR = 500
 
 FROM_ADDRESS = app.config['MAIL_USERNAME']
 MAIL_PWD = app.config['MAIL_PASSWORD']
-SEND_MAIL_RESET_PWD = True # Send mail whenever password is reset
+SEND_MAIL_RESET_PWD = app.config['MAIL_SEND_RESET_PWD'] # Send mail whenever password is reset
 
 
 
@@ -91,7 +91,7 @@ class User(db.Model):
 	def __repr__(self):
 		return '<User {}>'.format(self.username)
 		
-	def __init__(self, username, password, email=''): # change TO_ADDR to ''
+	def __init__(self, username, password, email='', role=USER_ROLE): # change TO_ADDR to ''
 		"""[summary]
 		Constructor
 		[description]
@@ -103,6 +103,7 @@ class User(db.Model):
 		self.username = username
 		self.password_hash = password
 		self.email = email
+		self.role = role
 
 
 class AccessLog(db.Model):
