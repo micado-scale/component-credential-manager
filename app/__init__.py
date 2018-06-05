@@ -8,6 +8,8 @@ from flask_restful import reqparse, abort, Api, Resource
 import sqlite3
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
+import os
+import csv
 
 import logging
 from logging.handlers import RotatingFileHandler
@@ -24,6 +26,16 @@ from app import routes
 # create all databases from dbmodels
 db.create_all()
 db.session.commit()
+
+#provision initial values from csv and remove file on success
+if os.access(app.config['PROVISION_FILE'], os.R_OK):
+    with open(app.config['PROVISION_FILE'], 'r') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            db.session.add(dbmodels.User(username=row['Username'], password=row['Password'], email=row['Email'], role=dbmodels.ADMIN_ROLE))
+        f.close()
+        db.session.commit()
+        os.unlink(app.config['PROVISION_FILE'])
 
 #if not app.debug:
 # initialize the log handler: The handler used is RotatingFileHandler which rotates the log file when the size of the file exceeds a certain limit.
