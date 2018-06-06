@@ -17,8 +17,8 @@ class LoginLibrary(object):
         res = requests.get(url)
         return res
 
-    def add_user(self, username, password = None, email = None):
-        url     = 'http://127.0.0.1:5001/v1.0/adduser'
+    def add_user(self, username=None, password = None, email = None):
+        url     = 'http://127.0.0.1:5001/v1.1/adduser'
         payload = {'username': username, 'password': password, 'email': email}
         res = requests.post(url, data=payload)
         json_data = json.loads(res.text)
@@ -31,8 +31,8 @@ class LoginLibrary(object):
         file.close()'''
         self._status = json_data['code']
 
-    def verify_user(self, username, password):
-        url     = 'http://127.0.0.1:5001/v1.0/verify'
+    def verify_user(self, username=None, password=None):
+        url     = 'http://127.0.0.1:5001/v1.1/verify'
         payload = {'username': username, 'password': password}
         res = requests.post(url, data=payload)
         json_data = json.loads(res.text)
@@ -44,36 +44,36 @@ class LoginLibrary(object):
             raise AssertionError("Expected status to be '%s' but was '%s'."
                                  % (expected_status, self._status))
 
-    def reset_passwd(self, username):
-        url     = 'http://127.0.0.1:5001/v1.0/resetpwd'
+    def reset_passwd(self, username=None):
+        url     = 'http://127.0.0.1:5001/v1.1/resetpwd'
         payload = {'username': username}
         res = requests.put(url, data=payload)
         json_data = json.loads(res.text)
         self._status = json_data['code']
 
-    def delete_user(self, username):
-        url     = 'http://127.0.0.1:5001/v1.0/deleteuser'
+    def delete_user(self, username=None):
+        url     = 'http://127.0.0.1:5001/v1.1/deleteuser'
         payload = {'username': username}
         res = requests.put(url, data=payload)
         json_data = json.loads(res.text)
         self._status = json_data['code']
 
-    def change_password(self, username, old_passwd, new_passwd):
-        url     = 'http://127.0.0.1:5001/v1.0/changepwd'
+    def change_password(self, username=None, old_passwd=None, new_passwd=None):
+        url     = 'http://127.0.0.1:5001/v1.1/changepwd'
         payload = {'username': username, 'oldpasswd': old_passwd, 'newpasswd': new_passwd}
         res = requests.put(url, data=payload)
         json_data = json.loads(res.text)
         self._status = json_data['code']
 
-    def change_user_role(self, username, new_role):
-        url     = 'http://127.0.0.1:5001/v1.0/changerole'
+    def change_user_role(self, username=None, new_role=None):
+        url     = 'http://127.0.0.1:5001/v1.1/changerole'
         payload = {'username': username, 'newrole': new_role}
         res = requests.put(url, data=payload)
         json_data = json.loads(res.text)
         self._status = json_data['code']
 
-    def get_user_role(self, username):
-        url     = 'http://127.0.0.1:5001/v1.0/getrole'
+    def get_user_role(self, username=None):
+        url     = 'http://127.0.0.1:5001/v1.1/getrole'
         payload = {'username': username}
         res = requests.get(url, data=payload)
         json_data = json.loads(res.text)
