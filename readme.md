@@ -15,6 +15,7 @@ __File structures:__
 - test_script.rst : the Robot framework test script that can be used for automatic acceptance tests
 - lib :
   - LoginLibrary.py : the library that contains all API used in the test scripts
+- API documentation : Documentation for the whole source code
 
 __How to use Rest API:__
 
