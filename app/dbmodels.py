@@ -24,6 +24,7 @@ from email.mime.text import MIMEText
 import io
 from datetime import datetime
 from datetime import timedelta
+import re # regular expression
 
 # Constants
 PASSWD_LEN = 256 # bits
@@ -48,6 +49,11 @@ HTTP_CODE_LOCKED = 423
 # Server error
 HTTP_CODE_SERVER_ERR = 500
 
+# Regular expression to ensure username should contain A-Z, a-z, 0-9, -, _, .
+REG_EXP_USER_NAME = "^[a-zA-Z0-9_.-]+$" # A-Z, a-z, 0-9, -, _, .
+REG_EXP_PASSWD = "^[a-zA-Z0-9]+$" # A-Z, a-z, 0-9
+# "^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{3,}$" # Minimum 3 characters, at least one letter and one number
+# "^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}" # Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character
 
 
 FROM_ADDRESS = app.config['MAIL_USERNAME']
@@ -82,7 +88,7 @@ class User(db.Model):
 	# Field: username
 	username = db.Column(db.String(64), index=True, unique=True)
 	# Field: email
-	email = db.Column(db.String(120), index=True, unique=True)
+	email = db.Column(db.String(120), index=True) # Email is temporarily optional, it should not be unique because multiple users may all have empty emails. If it is required later, set 'unique=True'
 	# Field: password_hash
 	password_hash = db.Column(db.String(PASSWD_LEN))
 	# Field: user role
@@ -227,6 +233,26 @@ def create_user_api():
 	uname = request.values.get("username")
 	passwd = request.values.get("password")
 	email = request.values.get("email")
+	if(uname is None or uname==''): # verify parameters
+		data = {
+			'code' : HTTP_CODE_BAD_REQUEST,
+			'user message'  : msg_dict['lack_of_input'],#'Add user successfully',
+			'developer message' : msg_dict['lack_of_input']
+		}
+		js = json.dumps(data)
+		resp = Response(js, status=HTTP_CODE_BAD_REQUEST, mimetype='application/json')
+		return resp
+
+	if(re.match(REG_EXP_USER_NAME,uname)==None): # if name does not follow the rule (only contains a-z, A-Z, 0-9)
+		data = {
+			'code' : HTTP_CODE_BAD_REQUEST,
+			'user message'  : msg_dict['wrong_user_name_format'],#'Add user successfully',
+			'developer message' : msg_dict['wrong_user_name_format']
+		}
+		js = json.dumps(data)
+		resp = Response(js, status=HTTP_CODE_BAD_REQUEST, mimetype='application/json')
+		return resp
+
 	if(email is None):
 		email=''
 
@@ -235,6 +261,17 @@ def create_user_api():
 		# random a default password
 		passwd = generate_passwd()
 		msg_passwd = msg_dict['pwd_generated'] + passwd # Password is auto-generated. Its value is:  
+
+
+	if(re.match(REG_EXP_PASSWD,passwd)==None): # if password does not follow the rule
+		data = {
+			'code' : HTTP_CODE_BAD_REQUEST,
+			'user message'  : msg_dict['wrong_password_rule'],#'Add user successfully',
+			'developer message' : msg_dict['wrong_password_rule']
+		}
+		js = json.dumps(data)
+		resp = Response(js, status=HTTP_CODE_BAD_REQUEST, mimetype='application/json')
+		return resp
 
 	# create a user
 	app.logger.info(msg_dict['add_user_progress']) # Trying to add a user to database
@@ -274,6 +311,17 @@ def reset_passwd_api():
 		[type: json] -- [description: code, message for the developer, new password if resetting successfully]
 	"""
 	uname = request.values.get("username")
+
+	if(uname==None or uname==''): # Verify parameters
+		data = {
+			'code' : HTTP_CODE_BAD_REQUEST,
+	 		'user message'  : msg_dict['lack_of_input'],
+	 		'result' : msg_dict['lack_of_input'] # Lack of user name or password
+		}
+		js = json.dumps(data)
+		resp = Response(js, status=HTTP_CODE_BAD_REQUEST, mimetype='application/json')
+		return resp
+
 
 	app.logger.info(msg_dict['reset_pwd_progress'])#Reset password of user"
 	try:
@@ -329,14 +377,14 @@ def verify_user_api():
 		uname = request.values.get("username")
 		passwd = request.values.get("password")
 		
-		if(uname==None or passwd==None): # Verify parameters
+		if(uname==None or passwd==None or uname=='' or passwd==''): # Verify parameters
 			data = {
 				'code' : HTTP_CODE_BAD_REQUEST,
-	 			'user message'  : msg_dict['uname_pwd_wrong'],
-	 			'result' : msg_dict['uname_pwd_wrong'] # User name does not exist
+	 			'user message'  : msg_dict['lack_of_input'],
+	 			'result' : msg_dict['lack_of_input'] # Lack of user name or password
 			}
 			js = json.dumps(data)
-			resp = Response(js, status=HTTP_CODE_OK, mimetype='application/json')
+			resp = Response(js, status=HTTP_CODE_BAD_REQUEST, mimetype='application/json')
 			return resp
 
 		# Check password
@@ -442,6 +490,16 @@ def delete_user_api():
 	"""
 	try:
 		uname = request.values.get("username")
+		if(uname==None or uname==''): # Verify parameters
+			data = {
+				'code' : HTTP_CODE_BAD_REQUEST,
+	 			'user message'  : msg_dict['lack_of_input'],
+	 			'result' : msg_dict['lack_of_input'] # Lack of user name or password
+			}
+			js = json.dumps(data)
+			resp = Response(js, status=HTTP_CODE_BAD_REQUEST, mimetype='application/json')
+			return resp
+
 		app.logger.info("Delete a user")
 
 		user = db.session.query(User).filter_by(username=uname).first()
@@ -531,6 +589,16 @@ def change_password_api():
 	old_passwd = request.values.get("oldpasswd")
 	new_passwd = request.values.get("newpasswd")
 
+	if(uname==None or old_passwd==None or new_passwd==None or uname=='' or old_passwd=='' or new_passwd==''): # Verify parameters
+		data = {
+			'code' : HTTP_CODE_BAD_REQUEST,
+	 		'user message'  : msg_dict['lack_of_input'],
+	 		'result' : msg_dict['lack_of_input'] # User name does not exist
+		}
+		js = json.dumps(data)
+		resp = Response(js, status=HTTP_CODE_BAD_REQUEST, mimetype='application/json')
+		return resp
+
 	app.logger.info(msg_dict['change_pwd_progress'])#Reset password of user"
 	try:
 		user = db.session.query(User.password_hash).filter_by(username=uname).first()
@@ -578,6 +646,17 @@ def change_role_api():
 	try:
 		uname = request.values.get("username")
 		new_role_meaning = request.values.get("newrole")
+
+		if(uname==None or uname=='' or new_role_meaning==None or new_role_meaning==''): # Verify parameters
+			data = {
+				'code' : HTTP_CODE_BAD_REQUEST,
+	 			'user message'  : msg_dict['lack_of_input'],
+	 			'result' : msg_dict['lack_of_input'] # Lack of user name or password
+			}
+			js = json.dumps(data)
+			resp = Response(js, status=HTTP_CODE_BAD_REQUEST, mimetype='application/json')
+			return resp
+
 		app.logger.info("Change the user's role")
 
 		if(new_role_meaning not in USER_ROLE_LIST):
@@ -638,6 +717,17 @@ def change_role_api():
 def retrieve_role_api():
 	try:
 		uname = request.values.get("username")
+
+		if(uname==None or uname==''): # Verify parameters
+			data = {
+				'code' : HTTP_CODE_BAD_REQUEST,
+		 		'user message'  : msg_dict['lack_of_input'],
+		 		'result' : msg_dict['lack_of_input'] # Lack of user name or password
+			}
+			js = json.dumps(data)
+			resp = Response(js, status=HTTP_CODE_BAD_REQUEST, mimetype='application/json')
+			return resp
+
 		app.logger.info("Retrieve the user's role")
 
 		user = db.session.query(User).filter_by(username=uname).first()
