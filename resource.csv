@@ -22,3 +22,6 @@ Id,Code,Message
 21,role_notexist,The role does not exists. It should be 'user' or 'admin'!
 22,change_user_role_success, The user's role is changed successfully!
 23,same_user_role, The user's new role is as same as the current role. Nothing's updated!
+24,lack_of_input, Lack of inputs! Please ensure that you provide all required information!
+25,wrong_user_name_format, Please check the user name! User name should only contain letters A-Z or a-z or 0-9 or - or _ or .!
+26,wrong_password_rule, Please check the password! Password should only contain letters A-Z or a-z or 0-9!
