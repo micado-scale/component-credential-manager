@@ -10,7 +10,7 @@
 		${resp}= 	print_hello
 		Should Be Equal As Strings 	${resp.status_code} 	${http_code_ok}
 	
-	Admin can create an account
+	Admin can create an account without email
 		Create user    ${username}    ${password}
 		Status should be    ${http_code_ok}
 
@@ -28,20 +28,28 @@
 		Login    ${username}   ${password}
 		Status should be    ${http_code_ok}
 
-	User cannot log in with bad password
+	User cannot log in with invalid password
 		Login    ${username}   ${invalid password}
 		Status Should Be    ${http_code_unauthorized} 
 
 	User cannot log in with invalid user name
 		Login 	 ${invalid username}		${password}
 		Status should be    ${http_code_unauthorized} 
-	
-	User cannot log in with empty password
-		Login    ${username}        ${null password}
+
+	User cannot log in without password
+		Login    ${username}    ${null password}
+		Status should be    ${http_code_unauthorized}
+
+	User cannot log in without username and password
+		Login    ${null username}    ${null password}
 		Status should be    ${http_code_unauthorized}
 
 	User cannot create account with existed user name
 		Create user    ${username}    ${password}
+		Status should be    ${http_code_bad_request}
+
+	User cannot create account with empty user name
+		Create user     ${null username}    ${null password}
 		Status should be    ${http_code_bad_request}
 	
 	User can change password then log in with new password, cannot log in with old password
@@ -110,9 +118,10 @@
 
 	*** Variables ***
 	${username}               mai
-	${password}               123£$!$"^"
+	${password}               100
 	${invalid username}       Daisy
 	${null password}          ''
+	${null username}          ''
 	${invalid password}       1234
 	${new password}           123
 	${http_code_ok}           200
@@ -130,6 +139,7 @@
 	${email_reset_pwd_body}    We received a request to reset your password in the MiCADO infrastructure.
 	${new_role_1}               user
 	${new_role_2}               admin
+	${pwd_generated_msg}      Password is auto-generated.
 
 	*** Keywords ***
 	Create user 
