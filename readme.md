@@ -22,11 +22,11 @@ Assuming that the following command lines are called inside a docker container i
 
 - Add a new user (the user's role will be 'USER' as default):
 
-curl -d "username=user01&password=123" credman:5001/v1.0/adduser
+curl -d "username=user01&password=123" credman:5001/v1.1/adduser
 
 - Verify a user:
 
-curl -d "username=user01&password=123" credman:5001/v1.0/verify
+curl -d "username=user01&password=123" credman:5001/v1.1/verify
 
 - Change a user's password:
 
@@ -34,21 +34,21 @@ curl -d "username=user01&oldpasswd=123&newpasswd=456" -X PUT credman:5001/v1.0/c
 
 - Reset a user's password:
 
-curl -d "username=user01" credman:5001/v1.0/resetpwd
+curl -d "username=user01" credman:5001/v1.1/resetpwd
 
 - Delete a user:
 
-curl -d "username=user01" credman:5001/v1.0/deleteuser
+curl -d "username=user01" credman:5001/v1.1/deleteuser
 
 - Retrieve a user's role
 
-curl -d "username=user01" credman:5001/v1.0/getrole
+curl -d "username=user01" credman:5001/v1.1/getrole
 
 - Change a user's role (There are 2 roles: user or admin)
 
-curl -d "username=user01&newrole=user" -X PUT credman:5001/v1.0/changerole
+curl -d "username=user01&newrole=user" -X PUT credman:5001/v1.1/changerole
 
-curl -d "username=user01&newrole=admin" -X PUT credman:5001/v1.0/changerole
+curl -d "username=user01&newrole=admin" -X PUT credman:5001/v1.1/changerole
 
 __How to use the test_script.rst:__
 
