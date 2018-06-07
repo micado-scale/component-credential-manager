@@ -16,6 +16,7 @@ __File structures:__
 - lib :
   - LoginLibrary.py : the library that contains all API used in the test scripts
 - API documentation : Documentation for the whole source code
+- micadoctl.sh : Bash script to run in the master node (host machine). After that, inside the master node, admin can run command line to add user, verify user,...
 
 __How to use Rest API:__
 
@@ -65,3 +66,41 @@ You may need to change the settings in your mail account to let less secure apps
 
 Run the following command line
 - robot test_script.rst
+
+__How to run command line in the master node (host machine):__
+
+- Add a new user (the user's role will be 'USER' as default):
+
+micadoctl.sh adduser user01 123
+
+- Verify a user:
+
+micadoctl.sh verify user01 123
+
+- Change a user's password:
+
+micadoctl.sh changepwd user01 123 456
+
+(change the password from 123 to 456)
+
+- Reset a user's password:
+
+micadoctl.sh resetpwd user01
+
+- Delete a user:
+
+micadoctl.sh deleteuser user01
+
+- Retrieve a user's role
+
+micadoctl.sh getrole user01
+
+- Change a user's role (There are 2 roles: user or admin)
+
+micadoctl.sh changerole user01 user
+
+(Change the role into 'user')
+
+micadoctl.sh changerole user01 admin
+
+(Change the role into 'admin')
