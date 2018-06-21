@@ -78,3 +78,10 @@ class LoginLibrary(object):
         res = requests.get(url, data=payload)
         json_data = json.loads(res.text)
         self._status = json_data['role']
+
+    def get_user_list(self):
+        url     = 'http://127.0.0.1:5001/v1.1/listusers'
+        res = requests.get(url)
+        users = res.json()
+        print users
+        return users

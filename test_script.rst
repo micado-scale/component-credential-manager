@@ -116,6 +116,12 @@
 		Should Contain    ${HTML}    ${email_reset_pwd_body}
 		Close Mailbox
 
+	User List
+		Create user with auto-generated password    check_length
+		${user_list} =	Get User List
+		Log	${user_list}
+		Should Not Be Empty	${_user_list}
+
 	*** Variables ***
 	${username}               mai
 	${password}               100

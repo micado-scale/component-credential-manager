@@ -479,6 +479,32 @@ def verify_user_api():
 		app.logger.error(e)
 		abort(HTTP_CODE_SERVER_ERR,msg_dict['error_undefined'])
 
+def list_users_api():
+	"""[summary]
+	List user details.
+	[description]
+	The function gets the details of all users.
+	Returns:
+		[type: json] -- [description: list of object, with fields: username, email, role, locked]
+	"""
+
+	try:
+		users = []
+		for user in db.session.query(User.id, User.username, User.email, User.role):
+			row = {'username': user.username, 'email': user.email}
+			if(user.role == USER_ROLE):
+				row['role'] = 'user'
+			if (user.role == ADMIN_ROLE):
+				row['role'] = 'admin'
+			latest_log = db.session.query(AccessLog.lock_status).filter_by(user_id=user.id).first()
+			if latest_log:
+				s = latest_log.lock_status
+				row['locked'] = 'unlocked' if s else 'locked'
+			users.append(row)
+	except exc.SQLAlchemyError:
+		abort(HTTP_CODE_SERVER_ERR, msg_dict['sqlalchemy_error'])
+	return json.dumps(users)
+
 def delete_user_api():
 	"""[summary]
 	This function is for deleting a user from the table User
