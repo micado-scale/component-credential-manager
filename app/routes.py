@@ -32,3 +32,4 @@ app.add_url_rule('/v1.1/deleteuser','delete_user_api', dbmodels.delete_user_api,
 app.add_url_rule('/v1.1/changepwd','change_password_api', dbmodels.change_password_api, methods=['PUT'])
 app.add_url_rule('/v1.1/changerole','change_role_api', dbmodels.change_role_api, methods=['PUT'])
 app.add_url_rule('/v1.1/getrole','retrieve_role_api', dbmodels.retrieve_role_api, methods=['GET'])
+app.add_url_rule('/v1.1/listusers','list_users_api', dbmodels.list_users_api, methods=['GET'])
