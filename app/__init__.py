@@ -8,6 +8,7 @@ from flask_restful import reqparse, abort, Api, Resource
 import sqlite3
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import event
 import os
 import csv
 
@@ -23,20 +24,6 @@ db = SQLAlchemy(app)
 from app import dbmodels
 from app import routes
 
-# create all databases from dbmodels
-db.create_all()
-db.session.commit()
-
-#provision initial values from csv and remove file on success
-if os.access(app.config['PROVISION_FILE'], os.R_OK):
-    with open(app.config['PROVISION_FILE'], 'r') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            db.session.add(dbmodels.User(username=row['Username'], password=row['Password'], email=row['Email'], role=dbmodels.ADMIN_ROLE))
-        f.close()
-        db.session.commit()
-        os.unlink(app.config['PROVISION_FILE'])
-
 #if not app.debug:
 # initialize the log handler: The handler used is RotatingFileHandler which rotates the log file when the size of the file exceeds a certain limit.
 logHandler = RotatingFileHandler('info.log', maxBytes=1000, backupCount=1) 
@@ -49,6 +36,27 @@ logHandler.setFormatter(formatter)
 # set the app logger level:  ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'). See http://flask.pocoo.org/docs/0.12/errorhandling/
 app.logger.setLevel(logging.INFO)
 app.logger.addHandler(logHandler)
+
+#provision initial values from csv and remove file on success
+def insert_initial_values(*args, **kwargs):
+    if os.access(app.config['PROVISION_FILE'], os.R_OK):
+        app.logger.info("Provisioning file found, loading intial user data; provision_file='%s'" % app.config['PROVISION_FILE'])
+        with open(app.config['PROVISION_FILE'], 'r') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                app.logger.info("Provisioning user; username='%s'" % row['Username'])
+                db.session.add(dbmodels.User(username=row['Username'], password=row['Password'], email=row['Email'], role=dbmodels.ADMIN_ROLE))
+            f.close()
+            db.session.commit()
+            #os.unlink(app.config['PROVISION_FILE'])
+    else:
+        app.logger.info("Could not read provisioning file, skipping initial user addition; provision_file='%s'" % app.config['PROVISION_FILE'])
+
+event.listen(dbmodels.User.__table__, 'after_create', insert_initial_values)
+
+# create all databases from dbmodels
+db.create_all()
+db.session.commit()
 
 #if not app.debug:
 if app.config['MAIL_SERVER']:
