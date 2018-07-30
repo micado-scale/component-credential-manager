@@ -181,7 +181,7 @@ def generate_passwd():
 	passwd =  "".join(choice(characters) for x in range(randint(PASSWD_MIN_LEN, PASSWD_MAX_LEN)))
 	return passwd
 
-def add_user(uname, passwd, email=''):
+def add_user(uname, passwd, email='', role=USER_ROLE):
 	"""[summary]
 	The function adds a user in the table User.
 	[description]
@@ -190,11 +190,13 @@ def add_user(uname, passwd, email=''):
 	Arguments:
 		uname {[type: String]} -- [description: user name]
 		passwd {[type: String]} -- [description: password]
+                email {[type: String]} -- [description: email address]
+                role {[type: int]} -- [description: role of the user, one of USER_ROLE or ADMIN_ROLE]
 	"""
 	try:
 		# create new user
 		passwd_hash = hash_passwd(passwd)
-		new_user = User(uname, passwd_hash, email)
+		new_user = User(uname, passwd_hash, email, role)
 		
 		# add new user to database
 		db.session.add(new_user)

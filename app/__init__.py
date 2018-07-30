@@ -42,13 +42,13 @@ def insert_initial_values(*args, **kwargs):
     if os.access(app.config['PROVISION_FILE'], os.R_OK):
         app.logger.info("Provisioning file found, loading intial user data; provision_file='%s'" % app.config['PROVISION_FILE'])
         with open(app.config['PROVISION_FILE'], 'r') as f:
-            reader = csv.DictReader(f)
+            reader = csv.DictReader(f, delimiter=',', quotechar='"')
             for row in reader:
-                app.logger.info("Provisioning user; username='%s'" % row['Username'])
-                db.session.add(dbmodels.User(username=row['Username'], password=row['Password'], email=row['Email'], role=dbmodels.ADMIN_ROLE))
+                app.logger.info("Provisioning user; username='%s'" % (row['Username'],))
+                dbmodels.add_user(uname=row['Username'], passwd=row['Password'], email=row['Email'], role=dbmodels.ADMIN_ROLE)
             f.close()
             db.session.commit()
-            #os.unlink(app.config['PROVISION_FILE'])
+            os.unlink(app.config['PROVISION_FILE'])
     else:
         app.logger.info("Could not read provisioning file, skipping initial user addition; provision_file='%s'" % app.config['PROVISION_FILE'])
 
