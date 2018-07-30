@@ -390,7 +390,7 @@ def verify_user_api():
 			return resp
 
 		# Check password
-		uid_pwd = db.session.query(User.id, User.password_hash, User.email).filter_by(username=uname).first()
+		uid_pwd = db.session.query(User.id, User.password_hash, User.email, User.role).filter_by(username=uname).first()
 		
 		# If there does not exist the inputted user name 'uname'
 		if(uid_pwd == None):
@@ -433,12 +433,16 @@ def verify_user_api():
 				stored_passwd = uid_pwd[1]
 				result = check_password_hash(stored_passwd,passwd)
 				if (result == True): # password matched
+					role = "user"
+					if uid_pwd[3] == ADMIN_ROLE:
+						role = "admin"
+
 					data = {
 						'code' : HTTP_CODE_OK,
 		 				'user message'  : msg_dict['auth_success'],
 		 				'result' : msg_dict['auth_success'],
 		 				'lock status': lock_status,
-		 				'role': "user" # 2. modify to other roles later
+						'role': role
 					}
 					# Unlock
 					if(latest_log != None):
