@@ -1,0 +1,11 @@
+pip3 install flask-script
+pip3 install flask-mail
+pip3 install flask-user
+
+IN LOCALHOST;
+
+Initialize database and create the first admin user:
+python3 manage.py init_db
+
+Run application:
+python3 main_script

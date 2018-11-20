@@ -1,8 +1,8 @@
-.. default-role:: code
+default-role:: code
 .. code:: robotframework
 
 	*** Settings *** 				
-	Library     lib/LoginLibrary.py
+	Library     lib/test_lib.py
 	Library     ImapLibrary
 
 	*** Test Cases *** 				
@@ -10,41 +10,32 @@
 		${resp}= 	print_hello
 		Should Be Equal As Strings 	${resp.status_code} 	${http_code_ok}
 	
-	Admin can create an account without email
-		Create user    ${username}    ${password}
+	Admin can create a user
+		Create user    ${username}    ${password}   ${email}    ${firstname}    ${lastname}
 		Status should be    ${http_code_ok}
 
-	Admin can change the user role
-		Change role    ${username}   ${new_role_2}
+	Admin can create a role in MiCADO
+		Create role    ${rolename_user}       ${rolelabel_user}
 		Status should be    ${http_code_ok}
-		Retrieve role    ${username}
-		Status should be    ${new_role_2}
-		Change role    ${username}   ${new_role_1}
-		Status should be    ${http_code_ok}
-		Retrieve role    ${username}
-		Status should be    ${new_role_1}
-
-	User can log in with valid credential
-		Login    ${username}   ${password}
+		Create role    ${rolename_admin}       ${rolelabel_admin}
 		Status should be    ${http_code_ok}
 
-	User cannot log in with invalid password
-		Login    ${username}   ${invalid password}
+	Admin can grant a list of roles to a user
+		Grant roles to a user    ${username}    ${role_list}
+
+	User can be authenticated with valid credential
+		Verify a user    ${username}   ${password}
+		Status should be    ${http_code_ok}
+
+	User cannot be authenticated with invalid password
+		Verify a user    ${username}   ${invalid password}
 		Status Should Be    ${http_code_unauthorized} 
 
-	User cannot log in with invalid user name
+	User cannot be authenticated with invalid user name
 		Login 	 ${invalid username}		${password}
 		Status should be    ${http_code_unauthorized} 
 
-	User cannot log in without password
-		Login    ${username}    ${null password}
-		Status should be    ${http_code_unauthorized}
-
-	User cannot log in without username and password
-		Login    ${null username}    ${null password}
-		Status should be    ${http_code_unauthorized}
-
-	User cannot create account with existed user name
+	Admin cannot create account with existed user name
 		Create user    ${username}    ${password}
 		Status should be    ${http_code_bad_request}
 
@@ -123,8 +114,20 @@
 		Should Not Be Empty	${_user_list}
 
 	*** Variables ***
-	${username}               mai
-	${password}               100
+	${username}               user1
+	${password}               123
+	${email}    			  "user1@mail.com"
+	${firstname}              "user1fn"
+	${lastname}               "user1ln"
+
+	${rolename_user}         "user"
+	${rolelabel_user}         "User"
+
+	${rolename_admin}         "admin"
+	${rolelabel_admin}        "Admin"
+
+    ${role_list}              [${rolename_user},${rolename_admin}]
+
 	${invalid username}       Daisy
 	${null password}          ''
 	${null username}          ''
@@ -148,30 +151,61 @@
 	${pwd_generated_msg}      Password is auto-generated.
 
 	*** Keywords ***
-	Create user 
-		[Arguments]    ${username}    ${password}					
-		add_user	${username}    ${password} 
-	Create user with email
-		[Arguments]    ${username}    ${password}    ${email}					
-		add_user	${username}    ${password}    ${email}
-	Create user with auto-generated password
-		[Arguments]    ${username}
-		add_user    ${username}
-	Login
-		[Arguments]    ${username}    ${password}
-		verify_user    ${username}    ${password}
-	Reset password
-		[Arguments]    ${username}
-		reset_passwd   ${username}
+	* Users *
+	Create a user 
+		[Arguments]    ${username}    ${password}	${email}    ${firstname}   ${lastname}			
+		add_user	${username}    ${password}    ${email}    ${firstname}    ${lastname}
+
 	Delete a user
 		[Arguments]    ${username}
 		delete_user	   ${username}
-	Change user password
-		[Arguments]    ${username}    ${old_passwd}    ${new_passwd}
-		change_password    ${username}    ${old_passwd}    ${new_passwd}
-	Change role
-		[Arguments]    ${username}    ${new_role}
-		change_user_role     ${username}    ${new_role}
-	Retrieve role
+
+	Update a user
+		[Arguments]    ${username}    ${new_firstname}    ${new_lastname}
+		update_user	   ${username}    ${new_firstname}    ${new_lastname}
+
+	Retrieve a user
 		[Arguments]    ${username}
-		get_user_role    ${username}
+		retrieve_user	   ${username}
+
+	* Password *
+	Verify a user
+		[Arguments]    ${username}    ${password}
+		verify_user    ${username}    ${password}
+
+	Reset user password
+		[Arguments]    ${username}
+		reset_password  ${username}
+
+	Change user password
+		[Arguments]    ${username}    ${current_password}    ${new_password}
+		reset_password  ${username}   ${current_password}    ${new_password}
+
+
+	* Roles *
+	Retrieve a role
+		[Arguments]    ${role_name}
+		retrieve_one_role    ${role_name}
+
+	Create role
+		[Arguments]    ${role_name}       ${role_label}
+		create_a_role    ${role_name}      ${role_label}
+
+	Delete role
+		[Arguments]    ${role_name}
+		delete_a_role    ${role_name}
+
+	Update role
+		[Arguments]    ${role_name}    ${new_role_label}
+		update_a_role    ${role_name}    ${new_role_label}
+
+	* User Roles *
+	Revoke a role
+		[Arguments]    ${username}    ${role_name}
+		revoke_user_role     ${username}    ${role_name}
+	Retrieve a user roles
+		[Arguments]    ${username}
+		get_user_roles    ${username}
+	Grant roles to a user
+		[Arguments]    ${username}   ${role_list}
+		grant_user_roles    ${username}   ${role_list}

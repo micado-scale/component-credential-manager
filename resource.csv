@@ -5,7 +5,7 @@ Id,Code,Message
 4,reset_pwd_success,Reset password successfully!
 5,uname_pwd_wrong,User name or password is wrong!
 6,auth_success,User is authenticated!
-7,auth_fail,User is NOT authenticated!
+7,invalid_email, Invalid email!
 8,pwd_notmatch,Password does not match!
 9,sqlalchemy_error,Error happens in SQLAlchemy. Check error message and error details in the log file for more information!
 10,pwd_setby_user,Password is set by inputted value from the user
@@ -19,9 +19,20 @@ Id,Code,Message
 18,change_pwd_progress,Trying to change password for the user
 19,change_pwd_success,Your password is changed successfully!
 20,change_pwd_fail,Failed to change password. Please check your password!
-21,role_notexist,The role does not exists. It should be 'user' or 'admin'!
+21,role_notexist,The specified role(s) does not exists!
 22,change_user_role_success, The user's role is changed successfully!
 23,same_user_role, The user's new role is as same as the current role. Nothing's updated!
 24,lack_of_input, Lack of inputs! Please ensure that you provide all required information!
-25,wrong_user_name_format, Please check the user name! User name should only contain letters A-Z or a-z or 0-9 or - or _ or .!
-26,wrong_password_rule, Please check the password! Password should only contain letters A-Z or a-z or 0-9!
+25,invalid_user_name,"Please check the user name. User name should only contain letters in [A-Z, a-z, 0-9,-,_,.]. The length should be between 3 and 10."
+26,invalid_pasword,"Password must contain at least 1 lowercase letter, 1 uppercase letter and 1 digit. It may contain special characters like !@# but not others. The length should be equal or greater than 3 characters."
+27,add_role_exist,The specific role already exists.
+28,add_role_success,New role added successfully.
+29,del_role_success,Delete role successfully.
+30,user_role_already_assigned, The user already holds the specified role!
+31,user_role_assigned, The new role(s) is assigned to the specified user!
+32,user_not_hold_role, The user does not hold the specified role(s)!
+33,user_role_revoked, The specified role is revoked from the user!
+34,current_password_not_match,Failed to change password. Current password does not match!
+35,lack_of_user_data, "Lack of user data. Please check if you've provided username, password and email yet."
+36,role_label_updated, Updated role label successfully!
+37,user_update_success, "User's info is updated"
