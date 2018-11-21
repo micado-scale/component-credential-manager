@@ -57,9 +57,9 @@ REG_EXP_USER_NAME = "^[a-zA-Z0-9_.-]{3,10}$"
 # When you change this regular expression,
 # please remember to change item 'invalid_pasword' in resource.csv 
 # and (optional) change implementation of function "generate_passwd()"
-PASSWD_MIN_LEN = 3
-PASSWD_MAX_LEN = 10
-REG_EXP_PASSWD = "(?=^.{PASSWD_MIN_LEN,}$)(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s)[0-9a-zA-Z!@#$%^&*()]*$"
+PASSWD_MIN_LEN = 6 # for auto-generated password
+PASSWD_MAX_LEN = 10 # for auto-generated password
+REG_EXP_PASSWD = "(?=^.{3,}$)(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s)[0-9a-zA-Z!@#$%^&*()]*$"
 
 # Ready-to-use regular expressions for password
 # Reg 1. Strong password 
@@ -410,16 +410,9 @@ class UserRoles(Resource):
 		from app.models.db_models import User
 
 		new_roles = set(request.json['roles'])
-		
 		try:
 			user = db_manager.find_user_by_username(user_name)
 			if user is not None:		# Check if user exist
-				#allowed_roles = Role.query.filter(Role.name == 'admin').first()# check if role record exist
-
-				#allowed_roles = db.session.query(Role) # retrieve all role names
-				#invalid_roles = set(new_roles) - set(allowed_roles)
-				#print(allowed_roles)
-
 				list_roles = Role.query.all()
 				allowed_roles = []
 				for role in list_roles:
@@ -430,11 +423,8 @@ class UserRoles(Resource):
 					user_roles = db_manager.get_user_roles(user) #.filter(Role.name == role_name).first()
 					# find difference between current user_roles and new_roles
 					diff_roles = new_roles - set(user_roles)
-					print(diff_roles)
 					for role_name in diff_roles:
-						#print(role_name)
 						role = next(filter(lambda x: x.name == role_name, list_roles)) # get Role object from list_roles
-						#print(role)
 						user.roles.append(role)
 					db_manager.commit()
 					return create_response(HTTP_CODE_OK,user_message=msg_dict['user_role_assigned'], developer_message=msg_dict['user_role_assigned']) #, specific_key='User', specific_value=data)				
@@ -504,7 +494,6 @@ class UserPwd(Resource):
 			user = db_manager.find_user_by_username(user_name)
 			if user is not None:		# Check if user exist
 				new_pwd = generate_passwd()
-				print(new_pwd)
 				user.password = user_manager.hash_password(new_pwd)
 				db_manager.commit()
 				return create_response(HTTP_CODE_OK,specific_key='New reset password', specific_value=new_pwd)			
