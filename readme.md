@@ -32,19 +32,19 @@ curl -d "username=user01&password=123" credman:5001/v1.1/verify
 
 - Change a user's password:
 
-curl -d "username=user01&oldpasswd=123&newpasswd=456" -X PUT credman:5001/v1.0/changepwd
+curl -d "username=user01&oldpasswd=123&newpasswd=456" -X PUT credman:5001/v1.1/changepwd
 
 - Reset a user's password:
 
-curl -d "username=user01" credman:5001/v1.1/resetpwd
+curl -d "username=user01" -X PUT credman:5001/v1.1/resetpwd
 
 - Delete a user:
 
-curl -d "username=user01" credman:5001/v1.1/deleteuser
+curl -d "username=user01" -X PUT credman:5001/v1.1/deleteuser
 
 - Retrieve a user's role
 
-curl -d "username=user01" credman:5001/v1.1/getrole
+curl -d "username=user01" -X GET credman:5001/v1.1/getrole
 
 - Change a user's role (There are 2 roles: user or admin)
 
@@ -67,7 +67,7 @@ You may need to change the settings in your mail account to let less secure apps
 Run the following command line
 - robot test_script.rst
 
-__How to run command line in the master node (host machine):__
+__How to run command line inside a docker container in the master node (host machine):__
 
 - Add a new user (the user's role will be 'USER' as default):
 
